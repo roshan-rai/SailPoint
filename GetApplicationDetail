@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule created="1741836371657" id="c0a8042195a019778195a16256e7014a" language="beanshell" modified="1742170270016" name="Get Application Details">
+  <Source>
+        import sailpoint.object.*;
+        import sailpoint.object.Application;
+        import org.apache.log4j.Logger;
+  			import sailpoint.api.SailPointContext;
+        import java.util.ArrayList;
+        import java.util.List;
+
+			List li = new ArrayList();
+  		List app = context.getObjects(Application.class);
+  
+  for(Application apps:app){
+    
+    String appName=apps.getName();   
+    Attributes att=apps.getAttributes();
+    
+    String filepath=att.get("file");
+    String delimiter=att.get("delimiter");
+    String commentCharacter=att.get("commentCharacter");
+    String groupsearchDN=att.get("group.searchDN");
+    
+    li.add("Groupsearch: "+groupsearchDN);
+    li.add("commentCharacter: "+commentCharacter);
+    li.add("File path: "+filepath);
+    li.add("Delimiter: "+filepath);
+    li.add("Application Name: "+appName);
+  }
+  
+  return li;
+  
+  </Source>
+</Rule>
