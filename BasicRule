@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule created="1741836371657" id="c0a80421958c136b81958d89c6c9024e" language="beanshell" modified="1742498160522" name="Angel2">
+  <Source>
+        import sailpoint.object.*;
+        import org.apache.log4j.Logger;
+        import java.util.ArrayList;
+        import java.util.List;
+
+        Logger log = Logger.getLogger("Angel3");
+
+        List list = new ArrayList();
+
+        Identity iden = context.getObjectByName(Identity.class, "Aman.Agrawal");
+        
+            String firstName = iden.getFirstname();
+            String lastName = iden.getLastname();
+            String email = iden.getEmail();
+            String gender = iden.getStringAttribute("gender");
+
+            Identity manager = iden.getManager();
+            String mgrname = (manager != null) ? manager.getName() : "No Manager Assigned";
+
+            list.add("First Name: " + firstName);
+            list.add("Last Name: " + lastName);
+            list.add("Email: " + email);
+            list.add("Manager: " + mgrname);
+            list.add("Gender: " + gender );
+
+        return list;
+  </Source>
+</Rule>
+
+Select * from jdbcDataForGroupEntitlement.department
