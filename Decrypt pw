@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule created="1742848478921" id="c0a8fe2995c910328195c9dd4ec90049" language="beanshell" name="Angel1">
+  <Source>
+        import sailpoint.object.*;
+        import org.apache.log4j.Logger;
+        import java.util.ArrayList;
+        import java.util.List;
+
+        return context.decrypt("1:ACP:XuSzzY9gfjL27Yi5N797ym1fJAoACtjOWpxAzIDZToI=");
+  </Source>
+</Rule>
