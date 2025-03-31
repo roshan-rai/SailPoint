@@ -1,0 +1,81 @@
+import sailpoint.api.SailPointContext;
+        import sailpoint.object.Identity;
+        import sailpoint.object.ProvisioningPlan;
+        import sailpoint.object.ProvisioningPlan.AccountRequest;
+        import java.util.List;
+        import sailpoint.api.Provisioner;
+
+
+        Identity iden=context.getObject(Identity.class, identityName);
+
+        ProvisioningPlan plan= new ProvisioningPlan();
+        AccountRequest accreq= new AccountRequest();
+        plan.setIdentity(iden);
+
+        String dn="uid="+iden.getName()+",ou=users,ou=system";
+        accreq.setApplication("ABC LDAP Application");
+        accreq.setNativeIdentity(dn);
+        accreq.setOperation(ProvisioningPlan.AccountRequest.Operation.Create);
+
+        List acreqlist= new ArrayList();
+        acreqlist.add(accreq);
+        plan.setAccountRequests(acreqlist);
+        Provisioner provisioner= new Provisioner(context);
+        provisioner.execute(plan);
+        return provisioner.getProject().toXml();
+
+
+Modify:
+
+import sailpoint.api.SailPointContext;
+        import sailpoint.object.Identity;
+        import sailpoint.object.ProvisioningPlan;
+        import sailpoint.object.ProvisioningPlan.AccountRequest;
+        import sailpoint.object.ProvisioningPlan.AttributeRequest;
+        import java.util.List;
+        import sailpoint.api.Provisioner;
+
+        Identity iden=context.getObject(Identity.class,identityName);
+        ProvisioningPlan plan= new ProvisioningPlan();
+        AccountRequest accreq=new AccountRequest();
+        plan.setIdentity(iden);
+
+        String dn="uid="+iden.getDisplayName()+",ou=users,ou=system";
+
+        accreq.setApplication("ABC LDAP Application");
+        accreq.setNativeIdentity(dn);
+        accreq.setOperation(ProvisioningPlan.AccountRequest.Operation.Modify);
+        AttributeRequest attreq= new AttributeRequest("givenName",ProvisioningPlan.Operation.Set,iden.getDisplayName()+"001");
+        accreq.add(attreq);
+
+        List accreqlist = new ArrayList();
+        accreqlist.add(accreq);
+        plan.setAccountRequests(accreqlist);
+        Provisioner provisioner= new Provisioner(context);
+        provisioner.execute(plan);
+        return provisioner.getProject().toXml();
+
+
+Delete:
+import sailpoint.api.SailPointContext;
+        import sailpoint.object.Identity;
+        import sailpoint.object.ProvisioningPlan;
+        import sailpoint.object.ProvisioningPlan.AccountRequest;
+        import java.util.List;
+        import sailpoint.api.Provisioner;
+
+        Identity iden=context.getObject(Identity.class, identityName);
+        ProvisioningPlan plan= new ProvisioningPlan();
+        AccountRequest acreq= new AccountRequest();
+        plan.setIdentity(iden);
+
+        String dn="uid="+iden.getName()+",ou=users,ou=system";
+        System.out.println("Error: Object not found in LDAP. DN: " + dn);acreq.setApplication("ABC LDAP Application");
+        acreq.setNativeIdentity(dn);
+        acreq.setOperation(ProvisioningPlan.AccountRequest.Operation.Delete);
+
+        List acreqlist= new ArrayList();
+        acreqlist.add(acreq);
+        plan.setAccountRequests(acreqlist);
+        Provisioner provisioner= new Provisioner(context);
+        provisioner.execute(plan);
