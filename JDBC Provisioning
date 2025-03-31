@@ -1,0 +1,140 @@
+  <Source>
+  
+  import java.sql.Connection;
+  import java.sql.DriverManager;
+  import java.sql.PreparedStatement;
+  import java.sql.SQLException;
+  import java.sql.Types;
+  import java.util.List;
+  import sailpoint.api.SailPointContext;
+  import sailpoint.connector.JDBCConnector;
+  import sailpoint.object.Application;
+  import sailpoint.object.ProvisioningPlan;
+  import sailpoint.object.ProvisioningPlan.AccountRequest;
+  import sailpoint.object.ProvisioningPlan.AttributeRequest;
+  import sailpoint.object.ProvisioningPlan.PermissionRequest;
+  import sailpoint.object.ProvisioningResult;
+  import sailpoint.object.Schema;
+	import sailpoint.object.Identity;
+	import sailpoint.object.TaskDefinition;
+	import sailpoint.api.TaskManager;
+	import sailpoint.object.TaskResult;
+
+  String taskName = "jdbc group account agg";
+
+
+
+String nativeIdentity=plan.getNativeIdentity();
+Identity idn=context.getObjectByName(Identity.class,nativeIdentity);
+String identityNumber=idn.getAttribute("Empid");
+
+  public String getAttributeRequestValue(AccountRequest acctReq, String attribute) {
+
+    if ( acctReq != null ) {
+      AttributeRequest attrReq = acctReq.getAttributeRequest(attribute);
+      if ( attrReq != null ) {
+        return attrReq.getValue();
+      }
+    }
+    return null;
+  }
+
+  ProvisioningResult result = new ProvisioningResult();
+  PreparedStatement statement;
+
+  if ( plan != null ) {
+
+    List accounts = plan.getAccountRequests();
+    if ( (accounts != null) &amp;&amp; (accounts.size() > 0) ) {
+      for ( AccountRequest account : accounts ) {
+        try {
+						account.setNativeIdentity(identityNumber);
+						log.error(account.getNativeIdentity());
+          if ( AccountRequest.Operation.Create.equals( account.getOperation() ) ) {
+            // Ideally we should first check to see if the account already exists.
+            // As written, this just assumes it does not.
+
+            statement = connection.prepareStatement( "insert into employee (Empid,username,email,contact,address) values (?,?,?,?,?)" );
+            statement.setString ( 1, account.getNativeIdentity() );
+            statement.setString ( 2, getAttributeRequestValue(account,"username") );
+            statement.setString ( 3, getAttributeRequestValue(account,"email") );
+            statement.setString ( 4, getAttributeRequestValue(account,"contact") );
+            statement.setString ( 5, getAttributeRequestValue(account,"address") );
+            statement.executeUpdate();
+
+            result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+						TaskDefinition task = context.getObjectByName(TaskDefinition.class,"jdbc group account agg");
+                    if (null != task) {
+                    try {
+                    Date now = new Date();
+                    TaskManager tm = new TaskManager(context);
+                    tm.run(task,null);
+                    } catch (Exception e) {
+                    log.error("Exception processing request for "+task.getName());
+                    throw new GeneralException(e);
+                    }
+                    }
+
+          } else if ( AccountRequest.Operation.Modify.equals( account.getOperation() ) ) {
+
+            // Modify account request -- change role
+
+            PreparedStatement statement = connection.prepareStatement( "update users set role = ? where login = ?" );
+            statement.setString ( 2, (String) account.getNativeIdentity() );
+            if ( account != null ) {
+              AttributeRequest attrReq = account.getAttributeRequest("role");
+              if ( attrReq != null &amp;&amp; ProvisioningPlan.Operation.Remove.equals(attrReq.getOperation()) ) {
+                statement.setNull ( 1, Types.NULL );
+                statement.executeUpdate();
+              } else {
+                statement.setString(1,attrReq.getValue());
+                statement.executeUpdate();
+              }
+            }
+            result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+
+          } else if ( AccountRequest.Operation.Delete.equals( account.getOperation() ) ) {
+
+            PreparedStatement statement = connection.prepareStatement( (String) application.getAttributeValue( "account.deleteSQL" ) );
+
+            statement.setString ( 1, (String) account.getNativeIdentity() );
+            statement.executeUpdate();
+
+            result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+
+          } else if ( AccountRequest.Operation.Disable.equals( account.getOperation() ) ) {
+
+            // Disable, not supported.
+
+          } else if ( AccountRequest.Operation.Enable.equals( account.getOperation() ) ) {
+
+            // Enable, not supported.
+
+          } else if ( AccountRequest.Operation.Lock.equals( account.getOperation() ) ) {
+
+            // Lock, not supported.
+
+          } else if ( AccountRequest.Operation.Unlock.equals( account.getOperation() ) ) {
+
+            // Unlock, not supported.
+
+          } else {
+            // Unknown operation!
+          }
+        }
+        catch( SQLException e ) {
+          result.setStatus( ProvisioningResult.STATUS_FAILED );
+          result.addError( e );
+        }
+        finally {
+          if(statement != null) {
+            statement.close();
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+  
+</Source>
