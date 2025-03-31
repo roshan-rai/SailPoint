@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule created="1742588693279" id="c0a8fe2995ba15688195ba614b1f00af" language="beanshell" modified="1743448201366" name="LDAP Provisioning">
+  <Source>
+      import sailpoint.object.*;
+  		import sailpoint.object.ProvisioningPlan.AccountRequest;
+  		import sailpoint.object.ProvisioningPlan.AttributeRequest;
+  		import sailpoint.object.ProvisioningPlan.AccountRequest.Operation;
+  		import sailpoint.api.Provisioner;
+			import java.sql.DriverManager;
+			import java.sql.PreparedStatement;
+			import java.sql.ResultSet;
+			import java.sql.SQLException;
+
+   
+        Identity identity = context.getObjectByName(Identity.class,"Mukesh.Yadav");
+  //return identity;
+        String dn="uid="+identity.getName()+",ou=users,ou=system";
+        ProvisioningPlan plan = new ProvisioningPlan();
+        plan.setIdentity(identity);
+        AccountRequest accReq = new AccountRequest();
+        accReq.setNativeIdentity(dn);
+        accReq.setApplication("Teklane ldap Application");
+        accReq.setOperation(AccountRequest.Operation.Create);
+        accReq.add(new AttributeRequest("dn", ProvisioningPlan.Operation.Set, dn));
+        accReq.add(new AttributeRequest("givenName", ProvisioningPlan.Operation.Set,identity.getFirstname()));
+        accReq.add(new AttributeRequest("password", ProvisioningPlan.Operation.Set,"secret"));
+        accReq.add(new AttributeRequest("sn", ProvisioningPlan.Operation.Set,identity.getLastname()));
+        accReq.add(new AttributeRequest("cn", ProvisioningPlan.Operation.Set,identity.getName()));
+
+      
+        List array = new ArrayList();
+        array.add(accReq);
+        plan.setAccountRequests(array);
+        Provisioner provisioner = new Provisioner(context);
+        provisioner.execute(plan);
+        
+        return plan.toXml();
+		
+  </Source>
+</Rule>
