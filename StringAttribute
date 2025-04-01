@@ -1,0 +1,9 @@
+import sailpoint.object.Identity;
+import sailpoint.api.SailPointContext;
+
+Identity identity = context.getObject(Identity.class, identityName);
+	if(identity!=null){
+
+	String department = identity.getStringAttribute("department");          	
+	return department;
+}
