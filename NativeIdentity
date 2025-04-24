@@ -1,0 +1,112 @@
+import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Map;
+
+        import sailpoint.api.SailPointContext;
+        import sailpoint.object.Difference;
+        import sailpoint.object.Identity;
+        import sailpoint.object.IdentityChangeEvent;
+        import sailpoint.object.NativeChangeDetection;
+        import sailpoint.object.*;
+
+
+        public Boolean verifyBundle(String addedVal){
+        Boolean exist = false;
+        QueryOptions qo = new QueryOptions();
+        Filter f1 = Filter.eq("type","it");
+        Filter f2 = Filter.eq("type","Requestable IT");
+        Filter filter = Filter.or(f1,f2);
+        qo.add(filter);
+
+
+        Iterator itBundles = context.search(Bundle.class,qo);
+        while((itBundles != null) &amp;&amp; (itBundles.hasNext())){
+        Bundle bundles = itBundles.next();
+
+        if(bundles != null){
+        List profile =  bundles.getProfiles();
+
+        for(Profile profiles:profile){
+        List constraintList = profiles.getConstraints();
+        for(Filter constraint:constraintList){
+        
+        if(constraint.getValue() instanceof List){
+        List entitlementValues = constraint.getValue();
+        exist = entitlementValues.contains(addedVal);
+        }else if(constraint.getValue() instanceof String){
+        String entitValues = constraint.getValue();
+        exist = entitValues.contains(addedVal);
+        }
+        if(exist){
+        return exist;
+        }
+        }
+        }
+        }
+        }
+        return exist;
+        }
+
+
+        List entitlementList = new ArrayList();
+        Map nativeChangeMap = new HashMap();
+        boolean requestable;
+
+        if (event != null) {
+        log.error("event.getNativeChanges()====" + event.getNativeChanges());
+        List nativeChanges = event.getNativeChanges();
+        if (nativeChanges != null &amp;&amp; !nativeChanges.isEmpty()) {
+        NativeChangeDetection detection = (NativeChangeDetection) nativeChanges.get(0);
+        log.error("detection====" + detection);
+        if (detection != null) {
+
+        log.error("detection.getApplication()====" + detection.getApplication());
+        String application = detection.getApplication();
+        List appNames = new ArrayList();
+        appNames.add(application);
+        nativeChangeMap.put("Application_Name", appNames);
+
+        log.error("detection.getDifferences()====" + detection.getDifferences());
+        List differences = detection.getDifferences();
+        if (differences != null) {
+        for (Difference difference : differences) {
+        log.error("difference.getAttribute()====" + difference.getAttribute());
+        String attributeName = difference.getAttribute();
+
+        log.error("difference.getAddedValues()======="+difference.getAddedValues());
+        log.error("Removed Values====="+difference.getRemovedValues());
+        List addedValues = difference.getAddedValues();
+        log.error("addedValues====="+addedValues);
+        List requestableValues = new ArrayList();
+        if(addedValues != null &amp;&amp; !addedValues.isEmpty()){
+        for(String addedVal : addedValues){
+        QueryOptions qo = new QueryOptions();
+        Filter valueFilter = Filter.eq("value", addedVal);
+        qo.addFilter(valueFilter);
+
+        Boolean exist = verifyBundle(addedVal);
+
+        List managedAttributes = context.getObjects(ManagedAttribute.class, qo);
+        if(managedAttributes != null &amp;&amp; !managedAttributes.isEmpty()){
+        ManagedAttribute ma = (ManagedAttribute)managedAttributes.get(0);
+        if(ma != null){
+        requestable =  ma.isRequestable();
+        if(requestable || exist){
+        log.error("It is requestable");
+        requestableValues.add(addedVal);
+        }
+        }
+        }
+        }    
+
+        nativeChangeMap.put("Entitlement_Value", requestableValues);
+
+        }
+        }
+
+        }
+        }
+        }
+        }
+
+        return nativeChangeMap;
