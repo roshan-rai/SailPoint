@@ -1,0 +1,5 @@
+Attribute Sync: If a user's name is updated in the authoritative source—for example, a middle name is added—this change must also be reflected in the target system. To ensure this synchronization works properly, we need to configure target attribute mapping in SailPoint.
+
+Target Mapping: If a user has multiple accounts in Active Directory and you only want to update the admin account, you'll need to write a transformation rule to specify that. However, if you want the update to apply to all associated accounts, you can simply enable it by selecting the appropriate checkbox in the global identity attribute settings.
+
+Adding a new Attribute in AD or targetted source through authorative : You can created an extended attribute in targetted attribute; in application owner to add through the targetted application.
