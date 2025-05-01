@@ -3,3 +3,5 @@ Attribute Sync: If a user's name is updated in the authoritative source—for ex
 Target Mapping: If a user has multiple accounts in Active Directory and you only want to update the admin account, you'll need to write a transformation rule to specify that. However, if you want the update to apply to all associated accounts, you can simply enable it by selecting the appropriate checkbox in the global identity attribute settings.
 
 Adding a new Attribute in AD or targetted source through authorative : You can created an extended attribute in targetted attribute; in application owner to add through the targetted application.
+
+Termninator: Terminator is an API in sailPoint that has access to method that deletes an object. .deleteObject. Why do we delete using this API and not the way in targetted application directly? For example why not delete the Role but delete from here ? Because this way it deletes all the associated link role with it which avoids error.
