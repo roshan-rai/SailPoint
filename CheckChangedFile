@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule created="1744056241598" id="c0a8fe2996111eb7819611da4dbe00ac" language="beanshell" modified="1744062584445" name="Nikesh">
+  <Source>
+  import sailpoint.object.*;
+  import org.apache.log4j.Logger;
+  import java.util.ArrayList;
+  import java.util.List;
+  import sailpoint.object.Custom;
+  import java.nio.file.attribute.FileTime;
+  import sailpoint.object.SailPointContext;
+  import sailpoint.api.SailPointFactory;
+  import sailpoint.tools.GeneralException;
+  import java.io.File;
+  import java.nio.file.*;
+  import java.nio.file.attribute.FileTime;
+  import java.text.SimpleDateFormat;
+  import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+  Custom customAppState = new Custom();
+  String appName = "Sandeep";
+
+  Application app = context.getObjectByName(Application.class, appName);  
+  SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  String dateString = formatter.format(app.getModified());
+
+  Path fp = Paths.get("C:\\test.csv.txt");
+  FileTime fileTime = Files.getLastModifiedTime(fp);
+
+  // Convert FileTime to Date
+  Date modifiedDate = new Date(fileTime.toMillis());
+
+  // Format Date to String
+  String fileModifiedString = formatter.format(modifiedDate);
+
+DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+LocalDateTime fileDateTime = LocalDateTime.parse(fileModifiedString, dtf);
+LocalDateTime appDateTime = LocalDateTime.parse(dateString, dtf);
+
+  
+  Path destination = Paths.get("C:\\ProcessedInput\\test.csv.txt");
+
+// Create destination folder if it doesn't exist
+Files.createDirectories(destination.getParent());
+
+
+if (fileDateTime.isAfter(appDateTime)) {
+  Files.move(fp, destination, StandardCopyOption.REPLACE_EXISTING);
+
+    return "File was updated and moved.";
+  
+} else {
+    return "File not modified. Nothing done.";
+}
+  
+  </Source>
+</Rule>
