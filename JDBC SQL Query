@@ -1,0 +1,26 @@
+create database TeklaneCWR;
+use TeklaneCWR;
+
+create table employee(
+    Empid varchar(500),
+    username varchar(500),
+    email varchar(500),
+    contact varchar(500),
+    address varchar(500),
+    department varchar(500)
+);
+
+insert into employee(Empid, username, email, contact, address, department)
+values("e2", "paul.smith", "paul@company.com", "3339996666", "Irving", "IT");
+
+insert into employee(Empid, username, email, contact, address, department)
+values("e15", "Suraj.Sigdell", "suraj.sigdell@company.com", "1236464565", "Dallas", "Business");
+
+insert into employee(Empid, username, email, contact, address, department)
+values("e43", "Manish.Gupta", "manish.Gupta@company.com", "4564879876", "Fort Worth", "IT");
+
+insert into employee(Empid, username, email, contact, address, department)
+values("e102", "Om.Gupta30", "Om.gupta@company.com", "7874541316", "Mesquite", "Marketing");
+
+insert into employee(Empid, username, email, contact, address, department)
+values("e12", "Binod.khanal33", "binod.khanal33@company.com", "5465484645", "Garland", "IT");
