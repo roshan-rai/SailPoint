@@ -1,0 +1,45 @@
+use multischema;
+
+create table department(
+    department_id varchar(10) primary key,
+    department_name varchar(100)
+);
+
+create table employee(
+    id varchar(10) primary key,
+    username varchar(100),
+    firstname varchar(100),
+    lastname varchar(100),
+    gender varchar(10),
+    email varchar(200),
+    department_id varchar(10),
+    managerid varchar(50),
+    status varchar(50),
+    transaction_type varchar(50),
+    dob varchar(20),
+    ainNumber varchar(50),
+    groupName varchar(100),
+    foreign key (department_id) references department(department_id)
+);
+
+insert into department(department_id, department_name) values
+('D001', 'Information Technology'),
+('D002', 'Human Resources'),
+('D003', 'Health Services & Care'),
+('D004', 'Business'),
+('D005', 'Marketing');
+
+insert into employee
+(id, username, firstname, lastname, gender, email, department_id, managerid, status, transaction_type, dob, ainNumber, groupName)
+values
+('e1','bill.gates','bill','gates','m','bill@company.com','D001','','1','','','', 'Group_IT'),
+('e2','paul.smith','paul','smith','m','paul@company.com','D001','','1','','','', 'Group_IT'),
+('e3','max.anderson','max','anderson','m','max@company.com','D001','e1','1','','','', 'Group_IT'),
+('e4','ron.smith','ron','smith','m','ron@company.com','D002','e2','0','','','', 'Group_HR'),
+('e5','claudia.white','claudia','white','f','claudia@company.com','D003','e1','1','','','', 'Group_HSC'),
+('e6','laxman.gupta','laxman','gupta','m','gupta@company.com','D003','e2','1','','','', 'Group_HSC'),
+('e8','sudarshan.karki','sudarshan','karki','m','sudarshan.karki@company.com','D001','e1','1','','','', 'Group_IT'),
+('e11','Binod.Pant','Binod','Pant','m','binod.pant@company.com','D003','e1','1','','','', 'Group_HSC'),
+('e12','Binod.khanal33','Binod','khanal33','m','binod.khanal33@company.com','D003','e1','1','','','', 'Group_HSC'),
+('e15','Suraj.Sigdell','Suraj','Sigdell','m','suraj.sigdell@company.com','D001','e2','1','','','', 'Group_IT'),
+('e43','Manish.Gupta','Manish','Gupta','m','manish.Gupta@company.com','D003','e43','0','TERMINATION','','', 'Group_HSC');
