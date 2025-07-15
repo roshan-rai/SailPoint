@@ -4,7 +4,8 @@ C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\identityiq\WEB-IN
 
 Change lines
 uncomment the line 38-42, 79
-line 74 rootLogger.level=trace
+line 74 rootLogger.level=warn
+//fix the line 74 rootlogger.level=trace not its warn
 
 line 38-42
 appender.file.type=File
